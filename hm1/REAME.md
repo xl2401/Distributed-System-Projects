@@ -1,0 +1,6 @@
+the program is divided into 3 parts, the client, the server and LRU. The client will make a request to server and server will deal with the filename. After request acceptance, it will check if it will search in the cache and do according process.
+
+Cache implementation. I create a LRU class here. I implement the LRU cache use a double linked list and hashmap(unodered_map) in c++. the map's key is the filename of the cacheentry, the value is the iterator of the list. The node of list is a cacheentry. The advantage of this is it will remove the node every time in O(1) because it can directly find the position of node in the list and erase it.
+For get function in LRU cache, it will check if the cacheentry is inside of its cache. If there it is, it will return the cacheentry. If it is not, I will check the size of the cacheentry and the size of cache, if it is bigger than the size of cache, it will just read from the memory and not store in the  cache later. If it is not, the list will pop up the most unused entries to ensure the free size is enough for current entry. 
+
+test case: send a valid filename, then it will first miss in server and save in client. At the second time, it will hit in server and save in client. send an unvalid filename, it will both print file not exist in both sides.
