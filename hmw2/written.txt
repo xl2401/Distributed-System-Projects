@@ -1,0 +1,17 @@
+1, at-most-once delivery is the request a client send to server can't be duplicated. In the actual implementation, we use a sequence # to recognize duplicates upon retransmissions and remember that at the server to eliminate duplicate requests.
+
+2, RPC stubs are automatically generated pieces of code that appear to implement the desired functions, but acutally do just call the RPC library to marshal/unmarshal and transmission.
+
+3, Because calling and called procedures run on different machines, with different address spaces, pointers are meaningless. References should be converted to local representation such as string or structs so that it can be passed via RPC. This is called marshalling. 
+
+4, only a) is correct. 
+
+    for a), each RPC call will block the current thread.
+        b), multiple client threads will be supported too by rpcc class.
+        c), the sequences depends. There are a lot of factors affecting the sequence. For example, the requests may go through diffrent routes. 
+        d) There is a thread pool(the maximum number of threads is limited) and rpcs will have a manager to manage the threads used for incoming requests. 
+        e) The PRC library use TCP messages because it is reliable and accurate. 
+
+5, communication failures such as network error and machine failures like server fails before or after processing request, client failure are those error conditions we should  guard against in a distributed environment. In a local enviroment we don't have to care about them.
+
+

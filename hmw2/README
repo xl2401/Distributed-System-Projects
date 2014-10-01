@@ -1,0 +1,43 @@
+modified files:
+
+1,lock_client.h: add acquire, release functions for clients. 
+
+2, lock_client.cc: implement specific funciton in acquire and release. there is a call function so that client can request to acquire and release lock.
+
+3, lock_server.h: add acquire , release head functions. Also define phtread_mutex m so that when several threads are requesting at the same time, only one can succedd and others are waiting until the lock is released.
+
+lock_acquired is a set . It  will record which lock of lockid_t is acquired.
+
+lock_con_map is a map. The key is lockid_t, the value is the conditional variable of pthread mutex. This will help that when the thread release the lock it will notify other threads so that one of them can get the lock.
+
+4, lock_server.cc:
+
+    add a lock to acquire and release function and it will be automatically released when the function is finished.
+
+    In acquired function. use the lock_acquired set to check if the lock is acquired or not. If it is, the thread will wait there until it is realeased.  Also check if the conditional variable  has been set to this lock. If not just init the pthread conditional variable and set it to the map accordionally. Then if the lock is aquired successfully , we insert the lock_id to the lock_acquired set. 
+
+    Similaly, in release function, first add a lock to release function. Remove the lockid_t from lock_acquired set. Then notify other threads the lock is released use pthread_con_signal
+
+5, lock_demo.cc
+
+    register handlers for these RPCs with the RPC server object
+
+6, rpc.cc
+
+    add_reply:
+    rpcs::dispatch calls add_reply when it is sending a reply to an RPC. 
+    add_reply() remember b and sz.
+
+
+    checkduplicate_and_update 
+    We use a window for replies so that the number will not be quite large. we know that xid_rep records the number of replies. If the xid of the reply is less than xid_rep , we just free the buf of each such request. Return NEW: if we never seen the xid before. INPROGRESS: have seen the xid, and the server is sitll processing it. DONE: previous reply returned in *b and *sz. FORGOTTEN: the privous reply may be is before the begin of the window. So it is counted as not seen or fogotten. 
+
+Test Cases:
+    single thread requests test
+    multi threads requests test. concurrent test.
+    single client requests test.
+    diff clients requests test.
+    diff RPC_LOSSY test
+    
+    
+
